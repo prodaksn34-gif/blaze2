@@ -18,8 +18,10 @@ openai.api_key = OPENAI_API_KEY
 application = Application.builder().token(TELEGRAM_TOKEN).build()
 
 # /start
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Привет, я Блейз!")
+async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_message = update.message.text
+    reply = f"Я получил твое сообщение: {user_message}"
+    await update.message.reply_text(reply)
 
 # чат
 async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -62,3 +64,4 @@ if __name__ == "__main__":
 
     # Запуск Flask
     server.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
