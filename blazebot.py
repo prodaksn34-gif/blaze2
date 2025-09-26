@@ -18,26 +18,13 @@ openai.api_key = OPENAI_API_KEY
 application = Application.builder().token(TELEGRAM_TOKEN).build()
 
 # /start
-async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_message = update.message.text
-    reply = f"Я получил твое сообщение: {user_message}"
-    await update.message.reply_text(reply)
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Привет, я Блейз!")
 
 # чат
 async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_message = update.message.text
-    try:
-        response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "Ты строгий, безэмоциональный, жестокий и рассудительный персонаж по имени Блейз. Ты секретный агент и все знаешь об оружии"},
-                {"role": "user", "content": user_message},
-            ]
-        )
-        reply = response.choices[0].message.content
-    except Exception as e:
-        reply = f"Ошибка: {e}"
-
+    reply = f"Я получил твое сообщение: {user_message}"
     await update.message.reply_text(reply)
 
 # Подключаем хендлеры
@@ -64,4 +51,5 @@ if __name__ == "__main__":
 
     # Запуск Flask
     server.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
 
