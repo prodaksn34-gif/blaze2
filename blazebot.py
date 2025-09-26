@@ -4,17 +4,17 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, ContextTypes, filters
 
 # ------------------------------
-# Flask для Render
+# Flask сервер
 # ------------------------------
 server = Flask(__name__)
 
 # ------------------------------
-# Ключи из переменных окружения
+# Telegram токен
 # ------------------------------
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 
 # ------------------------------
-# Создаём Application Telegram
+# Создаем Application Telegram
 # ------------------------------
 application = Application.builder().token(TELEGRAM_TOKEN).build()
 
@@ -27,10 +27,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_message = update.message.text
-    await update.message.reply_text(f"Эхо: {user_message}")
+    await update.message.reply_text(f"Эхо: {update.message.text}")
 
-# Регистрируем обработчики
 application.add_handler(CommandHandler("start", start))
 application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
@@ -43,13 +41,15 @@ def telegram_webhook():
     application.process_update(update)
     return "ok"
 
-# Простая домашняя страница
+# ------------------------------
+# Домашняя страница
+# ------------------------------
 @server.route("/")
 def home():
     return "Блейз бот (эхо) работает!"
 
 # ------------------------------
-# Запуск Flask
+# Запуск Flask на Railway
 # ------------------------------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
