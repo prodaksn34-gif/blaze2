@@ -2,7 +2,6 @@ import os
 from flask import Flask, request
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, ContextTypes, filters
-import openai
 
 # ------------------------------
 # Flask для Render
@@ -13,8 +12,6 @@ server = Flask(__name__)
 # Ключи из переменных окружения
 # ------------------------------
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-openai.api_key = OPENAI_API_KEY
 
 # ------------------------------
 # Создаём Application Telegram
@@ -26,28 +23,16 @@ application = Application.builder().token(TELEGRAM_TOKEN).build()
 # ------------------------------
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "Привет. Я Блейз. Строгий и рассудительный собеседник."
+        "Привет! Я Блейз (эхо-версия). Пиши что угодно, и я повторю."
     )
 
-async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_message = update.message.text
-    try:
-        response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "Ты строгий и рассудительный персонаж по имени Блейз."},
-                {"role": "user", "content": user_message},
-            ],
-        )
-        reply = response.choices[0].message.content
-    except Exception as e:
-        reply = f"Ошибка: {e}"
-
-    await update.message.reply_text(reply)
+    await update.message.reply_text(f"Эхо: {user_message}")
 
 # Регистрируем обработчики
 application.add_handler(CommandHandler("start", start))
-application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, chat))
+application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
 # ------------------------------
 # Webhook для Telegram
@@ -61,7 +46,7 @@ def telegram_webhook():
 # Простая домашняя страница
 @server.route("/")
 def home():
-    return "Блейз бот работает!"
+    return "Блейз бот (эхо) работает!"
 
 # ------------------------------
 # Запуск Flask
